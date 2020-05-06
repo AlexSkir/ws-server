@@ -20,7 +20,6 @@
   "dependencies": {
     "express": "^4.17.1",
     "firebase": "^7.14.2",
-    "utf-8-validate": "^5.0.2",
     "ws": "^7.2.5"
   }
 }
