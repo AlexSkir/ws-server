@@ -1,0 +1,24 @@
+{
+  "name": "ws-server",
+  "version": "1.0.0",
+  "description": "server for websocket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexSkir/ws-server.git"
+  },
+  "author": "AlexSkir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexSkir/ws-server/issues"
+  },
+  "homepage": "https://github.com/AlexSkir/ws-server#readme",
+  "dependencies": {
+    "firebase": "^7.14.2",
+    "ws": "^7.2.5"
+  }
+}
