@@ -36,19 +36,14 @@ const server = express()
 
 const wss = new Server({ server });
 
-const messages = [];
-
 wss.on('connection', (ws) => {
-  console.log('messages length', messages.length)
-  if (messages.length === 0) {
-    console.log('fetching db data')
-    database.db.ref('/messages/').once('value').then(function (snapshot) {
-      for (const message in snapshot.val()) {
-        messages.unshift(snapshot.val()[message])
-      }
-      ws.send(JSON.stringify(messages));
-    });
-  }
+  database.db.ref('/messages/').once('value').then(function (snapshot) {
+    const arr = [];
+    for (const message in snapshot.val()) {
+      arr.unshift(snapshot.val()[message])
+    }
+    ws.send(JSON.stringify(arr));
+  });
 
   ws.on('message', (message) => {
     console.log(`Received message => ${message}`)
