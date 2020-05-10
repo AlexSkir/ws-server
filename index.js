@@ -24,10 +24,6 @@ function writeMessage(messageBody) {
   database.db.ref().child('messages').push(messageBody);
 }
 
-// const WebSocket = require('ws')
-
-// const wss = new WebSocket.Server({ port: 8080 })
-
 const express = require('express');
 const { Server } = require('ws');
 
@@ -40,14 +36,19 @@ const server = express()
 
 const wss = new Server({ server });
 
+const messages = [];
+
 wss.on('connection', (ws) => {
-  database.db.ref('/messages/').once('value').then(function (snapshot) {
-    const arr = [];
-    for (const message in snapshot.val()) {
-      arr.unshift(snapshot.val()[message])
-    }
-    ws.send(JSON.stringify(arr));
-  });
+  console.log('messages length', messages.length)
+  if (messages.length === 0) {
+    console.log('fetching db data')
+    database.db.ref('/messages/').once('value').then(function (snapshot) {
+      for (const message in snapshot.val()) {
+        messages.unshift(snapshot.val()[message])
+      }
+      ws.send(JSON.stringify(messages));
+    });
+  }
 
   ws.on('message', (message) => {
     console.log(`Received message => ${message}`)
