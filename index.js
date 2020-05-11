@@ -1,3 +1,7 @@
+const database = require('./firebase');
+const express = require('express');
+const { Server } = require('ws');
+
 function makeRandomId() {
   const j = [];
   let x;
@@ -18,39 +22,42 @@ function createMessage(message) {
   }
 }
 
-const database = require('./firebase');
-
 function writeMessage(messageBody) {
   database.db.ref().child('messages').push(messageBody);
 }
 
-const express = require('express');
-const { Server } = require('ws');
-
 const PORT = process.env.PORT || 3000;
 const INDEX = '/index.html';
-
 const server = express()
   .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 const wss = new Server({ server });
 
-wss.on('connection', (ws) => {
+wss.broadcast = function broadcast(data) {
+  wss.clients.forEach(function each(client) {
+    client.send(data);
+  });
+};
+
+wss.on('connection', (ws, req) => {
+
   database.db.ref('/messages/').once('value').then(function (snapshot) {
     const arr = [];
     for (const message in snapshot.val()) {
-      arr.unshift(snapshot.val()[message])
+      arr.unshift(snapshot.val()[message]);
     }
     ws.send(JSON.stringify(arr));
   });
 
-  ws.on('message', (message) => {
-    console.log(`Received message => ${message}`)
+
+  ws.on('message', function (message) {
     const mes = JSON.parse(message);
     const received = createMessage(mes);
     writeMessage(received);
     const newMes = JSON.stringify([received])
-    ws.send(newMes)
+    console.log(`sent msg: ${newMes}`)
+    wss.broadcast(newMes);
   })
+
 })
