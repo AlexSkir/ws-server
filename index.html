@@ -3,6 +3,7 @@
 <head>
   <script>
     let HOST = location.origin.replace(/^http/, 'ws')
+    console.log(HOST)
     let ws = new WebSocket(HOST);
     let el;
 
